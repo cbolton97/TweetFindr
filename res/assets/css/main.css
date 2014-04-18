@@ -1,0 +1,55 @@
+﻿html,
+body {
+    margin:0;
+    padding:0;
+    background:#EEE;
+}
+.clear {
+    clear:both;
+}
+.panel{
+    display:none;
+}
+span,
+.action{
+    text-decoration:none;
+    font-family:sans-serif;
+}
+.header-container {
+    height: 60px;
+}
+header {
+    position:fixed;
+    margin:0;
+    padding:15px 0;
+    width:100%;
+    background:#333;
+}
+    header .title-container {
+        display:block;
+        position:absolute;
+        width:100%;
+        z-index:-1;
+        margin-top:-4px;
+        text-align:center;
+        
+    }
+        .title-container .title {
+            color:#FFF;
+            font-size:160%;
+        }
+    header .action{
+        color:#EEE;
+        font-size:110%;
+    }
+    header .edit{
+        padding:0 0 0 5px;
+        float:left;
+    }
+    header .refresh{
+         padding:0 5px 0 0;
+        float:right;
+    }
+ul {
+    margin:0;
+}

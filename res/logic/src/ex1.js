@@ -1,5 +1,11 @@
 ﻿(function ($) {
 
+    //COLLECTION
+    var List = Backbone.Collection.extend({
+        model: Item
+    });
+
+
     //MODEL
     var Item = Backbone.Model.extend({
         defaults: {
@@ -8,11 +14,7 @@
         }
     });
 
-    //COLLECTION
-    var List = Backbone.Collection.extend({
-        model: Item
-    });
-
+   
     //TEMPLATE
     var ItemTemplate = _.template("<div><%= count %></div>")
 
@@ -70,10 +72,20 @@
         addItem: function () {
             this.counter++;
             var item = new Item();
+            if ($('.user_input').val() === "") {
+                item.set({
+                    string: "empty",
+                });
+            } else {
+                item.set({
+                    string: $('.user_input').val(),
+                });
+            }
+           
             item.set({
-                string: $('.user_input').val(),
                 num: "Item #" + this.counter
             });
+            $('.user_input').val("");
             this.collection.add(item);
         },
         appendItem: function (item) {
