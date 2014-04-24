@@ -1,7 +1,7 @@
 ﻿(function ($) {
 
     //TEMPLATES
-    var HeaderTemplate = _.template($('#header_template').html()),
+    var HeaderTemplate = _.template($('#header_template').html()), //is this really needed?
         ItemTemplate = _.template($('#item_template').html()),
         tweet_template = _.template($('#tweet_template').html());
 
@@ -51,6 +51,8 @@
         });
     }
 
+
+//Backbone stuff is a little wierd, will fix
     //COLLECTION
     var List = Backbone.Collection.extend({
         model: Item
