@@ -1,27 +1,4 @@
-﻿<?php
-session_start();
-require_once("res/logic/src/twitteroauth.php"); //Path to twitteroauth library
- 
-$notweets = 30;
-$consumerkey = "uqfeqMugt4nHyq4Ijd2XoQ";
-$consumersecret = "awKlsv4HRm5IEAkScBLOKXJuefNMpwOsDlGmQmuF7zA";
-$accesstoken = "355378041-kGNQSnXE3zOd2al47Pdx7mnQQLIzcnAWo2vZPXv0";
-$accesstokensecret = "60Gc7By29jUadAornsVpauhYtMCS4DT705d1iSw9gYKxw";
-
-function getConnectionWithAccessToken($cons_key, $cons_secret, $oauth_token, $oauth_token_secret) {
-  $connection = new TwitterOAuth($cons_key, $cons_secret, $oauth_token, $oauth_token_secret);
-  return $connection;
-}
- 
-
-$connection = getConnectionWithAccessToken($consumerkey, $consumersecret, $accesstoken, $accesstokensecret);
-$query = "ukraine";
-$tweets_raw = $connection->get("https://api.twitter.com/1.1/search/tweets.json?q=$query");
-
-?>
-<script>
-	var tweets_json = <?php echo json_encode($tweets_raw); ?>;
-</script>
+﻿
 
 
 <!DOCTYPE html>
@@ -52,7 +29,7 @@ $tweets_raw = $connection->get("https://api.twitter.com/1.1/search/tweets.json?q
         <script type="foo/bar" id="header_template">
             <section class="header_default panel">
                 <a href="#" class="action edit">
-                    Edit
+                    Search
                 </a>
                 <div class="title-container">
                     <span class="title">
@@ -76,6 +53,21 @@ $tweets_raw = $connection->get("https://api.twitter.com/1.1/search/tweets.json?q
             <span class="id">ID: <%= id %></span>
             <span class="value">Value: <%= string %> </span>
             <a class="action delete" href='#'>Delete</a>
+        </script>
+        <script type="foo/bar" id="tweet_template">
+            <section class="tweet_default">
+                <span class="user_name">
+                    @<%= user_name %>
+                </span>
+                <a target="_blank" href="<%= url %>" class="action timestamp">
+                    <%= timestamp %>
+                </a>
+                <span class="message">
+                    <%= text %>
+                </span>
+
+                <div class="clear"></div>
+            </section>
         </script>
     </section>
 	

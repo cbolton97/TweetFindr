@@ -1,4 +1,9 @@
-﻿html,
+﻿/*
+COLORS:
+blue: #00acee
+
+*/
+html,
 body {
     margin:0;
     padding:0;
@@ -16,16 +21,23 @@ span,
     font-family:sans-serif;
 }
 .header-container {
-    height: 60px;
+    height: 55px;
 }
 header {
     position:fixed;
     margin:0;
-    padding:15px 0;
+    padding:3px 0;
     width:100%;
-    background:#333;
+    background:#00acee;
 }
+    header .header_default{
+        padding:15px 0;
+    }
+    header .header_editor{
+        padding:5px 0;
+    }
     header .title-container {
+        padding-top:2px;
         display:block;
         position:absolute;
         width:100%;
@@ -36,20 +48,74 @@ header {
     }
         .title-container .title {
             color:#FFF;
-            font-size:160%;
+            font-size:130%;
+            font-weight:bold;
         }
     header .action{
-        color:#EEE;
-        font-size:110%;
+        padding-top:4px;
+        color:#FFF;
+        font-size:80%;
     }
     header .edit{
-        padding:0 0 0 5px;
+        padding-left:15px;
         float:left;
     }
-    header .refresh{
-         padding:0 5px 0 0;
+    header .refresh,
+    header .search{
+        padding-right:15px;
         float:right;
+    }
+    header .search{
+        padding-top:14px;
+    }
+    header .user_input{
+        margin:5px;
+        height:31px;
+        width:75%;
+        font-size:90%;
+        border-radius:5px;
+    }
+.tweet_default{
+    margin:0;
+    padding:15px 10px;
+    background:#FFF;
+    border-bottom:1px solid #DDD;
+}
+.tweet_default span{
+    display: block;
+}
+
+    .tweet_default .user_name{
+        color:blue;
+    }
+    .tweet_default .timestamp{
+        color:grey;
+    }
+    .tweet_default .message{
+        color:#333;
+        font-size:90%;
     }
 ul {
     margin:0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

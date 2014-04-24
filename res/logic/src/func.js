@@ -1,16 +1,55 @@
 ﻿(function ($) {
-    var tweet_template = _.template("<p>@<%= user_name %><br /><%= text %><br /><%= timestamp %></p>");
-    $.each(tweets_json, function (i) {
-        $.each(this, function (k, v) {
-            console.log(tweets_json[i][k]);
-            if (tweets_json[i][k].user === undefined) {
-                console.log("fail");
-            } else {
-                $('.list_container').append(tweet_template({ user_name: tweets_json[i][k].user.screen_name, text: tweets_json[i][k].text, timestamp: tweets_json[i][k].created_at }));
-            }
+
+    //TEMPLATES
+    var HeaderTemplate = _.template($('#header_template').html()),
+        ItemTemplate = _.template($('#item_template').html()),
+        tweet_template = _.template($('#tweet_template').html());
+
+    //should be intergrated with backbone, set on a timeout sequence, linked to rehfresh
+    function retrieveTweets(query){
+        console.log(query);
+        $.ajax({
+          type: "POST",
+          url: "res/logic/src/getTweets.php",
+          data: "query="+ query,
+          success: function (data){
+            console.log("Ajax request was a success. :D");
+            console.log(data);
+            formatTweets(data);
+          }
+        }).done(function() {
+          console.log("Ajax request done. :)");
+        }).fail(function() {
+          console.log("Ajax request died. :( ");
+        })
+      }
+
+    retrieveTweets("ukraine"); //this needs to go
+
+    //should intergrate with a collection (?)
+    function formatTweets(data){
+        $('.list_container').html(" "); //this is bad
+        var tweets_json = JSON.parse(data);
+
+        $.each(tweets_json, function (i) { //loops through tweet statuses and metadata
             
+            $.each(this, function (k, v) { //loops through tweet object
+                console.log(tweets_json[i][k]);
+                if (tweets_json[i][k].user === undefined) { //checks to see if object is tweet, needs to die
+                    console.log("data failed test");
+                } else {
+                    var tweet_url = "http://twitter.com/" + tweets_json[i][k].user.screen_name + "/status/" + tweets_json[i][k].id_str;
+                    $('.list_container').append(tweet_template({ 
+                        url: tweet_url,
+                        user_name: tweets_json[i][k].user.screen_name, 
+                        text: tweets_json[i][k].text, 
+                        timestamp: tweets_json[i][k].created_at 
+                    }));
+                }
+                
+            });
         });
-    });
+    }
 
     //COLLECTION
     var List = Backbone.Collection.extend({
@@ -28,12 +67,9 @@
     });
 
 
-    //TEMPLATES
-    var HeaderTemplate = _.template($('#header_template').html());
-    var ItemTemplate = _.template($('#item_template').html());
 
 
-    //ITEM VIEW
+    //ITEM VIEW should be rewritten to reflect it's real purpose
     var ItemView = Backbone.View.extend({
         tagName: 'li',
         events: {
@@ -43,6 +79,7 @@
             _.bindAll(this, 'render', 'unrender', 'remove');
             this.model.bind('change', this.render);
             this.model.bind('remove', this.unrender);
+            retrieveTweets(this.model.get('string'));
         },
         render: function () {
             $(this.el).html(ItemTemplate({ id: this.model.get('ID'), string: this.model.get('string') }));
@@ -57,7 +94,7 @@
     });
 
     //LIST VIEW
-    var HeaderView = Backbone.View.extend({
+    var HeaderView = Backbone.View.extend({ 
         el: $('header'),
         events: {
             'click a.edit': 'edit',
@@ -124,6 +161,7 @@
         edit: function () {
             $(".header_default").slideUp();
             $(".header_editor").slideDown();
+            $(".user_input").focus();
             
         }
        
