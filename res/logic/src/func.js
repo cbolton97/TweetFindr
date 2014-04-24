@@ -28,26 +28,34 @@
 
     //should intergrate with a collection (?)
     function formatTweets(data){
-        $('.list_container').html(" "); //this is bad
+        $('.list_container').html(" "); //this is bad .empty()
         var tweets_json = JSON.parse(data);
 
-        $.each(tweets_json, function (i) { //loops through tweet statuses and metadata
-            
-            $.each(this, function (k, v) { //loops through tweet object
-                console.log(tweets_json[i][k]);
-                if (tweets_json[i][k].user === undefined) { //checks to see if object is tweet, needs to die
-                    console.log("data failed test");
-                } else {
-                    var tweet_url = "http://twitter.com/" + tweets_json[i][k].user.screen_name + "/status/" + tweets_json[i][k].id_str;
-                    $('.list_container').append(tweet_template({ 
-                        url: tweet_url,
-                        user_name: tweets_json[i][k].user.screen_name, 
-                        text: tweets_json[i][k].text, 
-                        timestamp: tweets_json[i][k].created_at 
-                    }));
-                }
-                
+        $.each(tweets_json.statuses, function (i, tweet) { //loops through tweet statuses and metadata
+            //console.log(tweet);
+            var t = new Tweet(tweet);
+            console.log(t);
+            var tw = new TweetView({
+                model: t
             });
+            
+            $('.list_container').append(tw.render().el);
+            
+            // $.each(this, function (k, v) { //loops through tweet object
+            //     console.log(tweets_json[i][k]);
+            //     if (tweets_json[i][k].user === undefined) { //checks to see if object is tweet, needs to die
+            //         console.log("data failed test");
+            //     } else {
+            //         var tweet_url = "http://twitter.com/" + tweets_json[i][k].user.screen_name + "/status/" + tweets_json[i][k].id_str;
+            //         $('.list_container').append(tweet_template({ 
+            //             url: tweet_url,
+            //             user_name: tweets_json[i][k].user.screen_name, 
+            //             text: tweets_json[i][k].text, 
+            //             timestamp: tweets_json[i][k].created_at 
+            //         }));
+            //     }
+                
+            // });
         });
     }
 
@@ -67,11 +75,23 @@
         }
         
     });
+    var Tweet = Backbone.Model.extend({
+        idAttribute: "id_str"
+    });
 
 
 
 
     //ITEM VIEW should be rewritten to reflect it's real purpose
+    var TweetView = Backbone.View.extend({
+        render: function(){
+            this.$el.append(tweet_template(this.model.attributes));
+            return this;
+        }
+
+
+
+    });
     var ItemView = Backbone.View.extend({
         tagName: 'li',
         events: {

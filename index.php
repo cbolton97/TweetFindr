@@ -19,6 +19,7 @@
         </div>
         <section class="list_container">
             <ul></ul>
+
         </section>
         <footer>
 
@@ -26,7 +27,7 @@
     </div>
 
     <section class="template-container">
-        <script type="foo/bar" id="header_template">
+        <script type="text/template" id="header_template"> 
             <section class="header_default panel">
                 <a href="#" class="action edit">
                     Search
@@ -57,10 +58,10 @@
         <script type="foo/bar" id="tweet_template">
             <section class="tweet_default">
                 <span class="user_name">
-                    @<%= user_name %>
+                    @<%= user.screen_name %>
                 </span>
-                <a target="_blank" href="<%= url %>" class="action timestamp">
-                    <%= timestamp %>
+                <a target="_blank" href="http://twitter.com/<%= user.screen_name%>/status/<%= id_str%>" class="action timestamp">
+                    <%= created_at %>
                 </a>
                 <span class="message">
                     <%= text %>
