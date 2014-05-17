@@ -1,7 +1,4 @@
-﻿
-
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
@@ -14,48 +11,43 @@
 <body>
 
     <div id="app">
-        <div class="header-container">
-            <header></header>
-        </div>
-        <section class="list_container">
-            <ul></ul>
-
-        </section>
-        <footer>
-
-        </footer>
+       
     </div>
 
     <section class="template-container">
-        <script type="text/template" id="header_template"> 
-            <section class="header_default panel">
-                <a href="#" class="action edit">
-                    Search
-                </a>
-                <div class="title-container">
-                    <span class="title">
-                        TweetFindr
-                    </span>
-                </div>
-                <a href="#" class="action refresh">
-                    Refresh
-                </a>
-                <div class="clear"></div>
+        <script type="text/template" id="app_template">
+            <section class="header_container">
+                <header>
+                    <section class="header_default panel">
+                        <a href="#" class="action edit">
+                            Search
+                        </a>
+                        <div class="title-container">
+                            <span class="title">
+                                TweetFindr
+                            </span>
+                        </div>
+                        <a href="#" class="action refresh">
+                            Refresh
+                        </a>
+                        <div class="clear"></div>
+                    </section>
+                    <section class="header_editor panel">
+                        <input class='user_input' type='text' />
+                        <a href="#" class="action search">
+                            Search
+                        </a>
+                        <div class="clear"></div>
+                    </section>
+                </header>
             </section>
-            <section class="header_editor panel">
-                <input class='user_input' type='text' />
-                <a href="#" class="action search">
-                    Search
-                </a>
-                <div class="clear"></div>
+            <section class="tweet_container">
+                <ul></ul>
             </section>
+            <footer></footer>
+
         </script>
-        <script type="foo/bar" id="item_template">
-            <span class="id">ID: <%= id %></span>
-            <span class="value">Value: <%= string %> </span>
-            <a class="action delete" href='#'>Delete</a>
-        </script>
-        <script type="foo/bar" id="tweet_template">
+        <script type="text/template" id="tweet_template">
             <section class="tweet_default">
                 <span class="user_name">
                     @<%= user.screen_name %>

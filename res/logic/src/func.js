@@ -1,193 +1,114 @@
-﻿(function ($) {
+//QUESTIONS: add something to top of collection - unshift?
+//           can we detect new tweets vs already displayed tweets when refreshing? _.difference?
+
+(function ($) {
 
     //TEMPLATES
-    var HeaderTemplate = _.template($('#header_template').html()), //is this really needed?
-        ItemTemplate = _.template($('#item_template').html()),
-        tweet_template = _.template($('#tweet_template').html());
+var AppTemplate = _.template($('#app_template').html()),
+    TweetTemplate = _.template($('#tweet_template').html()),
 
-    //should be intergrated with backbone, set on a timeout sequence, linked to rehfresh
-    function retrieveTweets(query){
-        console.log(query);
-        $.ajax({
-          type: "POST",
-          url: "res/logic/src/getTweets.php",
-          data: "query="+ query,
-          success: function (data){
-            console.log("Ajax request was a success. :D");
-            console.log(data);
-            formatTweets(data);
-          }
-        }).done(function() {
-          console.log("Ajax request done. :)");
-        }).fail(function() {
-          console.log("Ajax request died. :( ");
-        })
-      }
-
-    retrieveTweets("ukraine"); //this needs to go
-
-    //should intergrate with a collection (?)
-    function formatTweets(data){
-        $('.list_container').html(" "); //this is bad .empty()
-        var tweets_json = JSON.parse(data);
-
-        $.each(tweets_json.statuses, function (i, tweet) { //loops through tweet statuses and metadata
-            //console.log(tweet);
-            var t = new Tweet(tweet);
-            console.log(t);
-            var tw = new TweetView({
-                model: t
-            });
-            
-            $('.list_container').append(tw.render().el);
-            
-            // $.each(this, function (k, v) { //loops through tweet object
-            //     console.log(tweets_json[i][k]);
-            //     if (tweets_json[i][k].user === undefined) { //checks to see if object is tweet, needs to die
-            //         console.log("data failed test");
-            //     } else {
-            //         var tweet_url = "http://twitter.com/" + tweets_json[i][k].user.screen_name + "/status/" + tweets_json[i][k].id_str;
-            //         $('.list_container').append(tweet_template({ 
-            //             url: tweet_url,
-            //             user_name: tweets_json[i][k].user.screen_name, 
-            //             text: tweets_json[i][k].text, 
-            //             timestamp: tweets_json[i][k].created_at 
-            //         }));
-            //     }
-                
-            // });
-        });
-    }
-
-
-//Backbone stuff is a little wierd, will fix
-    //COLLECTION
-    var List = Backbone.Collection.extend({
-        model: Item
-    });
-
-
-    //MODEL
-    var Item = Backbone.Model.extend({
+    Query = Backbone.Model.extend({
         defaults: {
-            string: 0,
-            ID: 0
+            q: "ukraine" //tie to cache?
         }
-        
-    });
-    var Tweet = Backbone.Model.extend({
+    }),
+    Tweets = Backbone.Collection.extend({
+        model: Tweet
+    }),
+    Tweet = Backbone.Model.extend({
         idAttribute: "id_str"
-    });
-
-
-
-
-    //ITEM VIEW should be rewritten to reflect it's real purpose
-    var TweetView = Backbone.View.extend({
+    }),
+    //TWEET VIEW 
+    TweetView = Backbone.View.extend({
+         initialize: function() {
+          this.listenTo(AppView.storedTweets, 'reset', this.remove);
+          //console.log(this.model.attributes.text);
+          $.each(this.model.attributes.entities.urls, function (i, url) { 
+            console.log(url);
+          });
+        },
         render: function(){
-            this.$el.append(tweet_template(this.model.attributes));
+            
+            this.$el.append(TweetTemplate(this.model.attributes));
             return this;
         }
 
-
-
-    });
-    var ItemView = Backbone.View.extend({
-        tagName: 'li',
+    }),
+    //APP VIEW
+    AppView = Backbone.View.extend({ 
+        el: $('#app'),
         events: {
-            'click a.delete': 'remove'
-        },
-        initialize: function () {
-            _.bindAll(this, 'render', 'unrender', 'remove');
-            this.model.bind('change', this.render);
-            this.model.bind('remove', this.unrender);
-            retrieveTweets(this.model.get('string'));
-        },
-        render: function () {
-            $(this.el).html(ItemTemplate({ id: this.model.get('ID'), string: this.model.get('string') }));
-            return this;
-        },
-        unrender: function () {
-            $(this.el).remove();
-        },
-        remove: function () {
-            this.model.destroy();
-        }
-    });
-
-    //LIST VIEW
-    var HeaderView = Backbone.View.extend({ 
-        el: $('header'),
-        events: {
-            'click a.edit': 'edit',
-            'click a.search': 'search',
+            'click a.search': 'newSearch',
+            'click a.edit': 'editor',
+            'click a.refresh': 'refresh'
             
         },
         initialize: function () {
-            _.bindAll(this, 'render', 'appendItem', 'edit', 'search', 'unrender');
-            
-
-            this.collection = new List();
-            this.collection.bind('change', this.render);
-            this.collection.bind('add', this.appendItem);
-
-            this.counter = 0;
+            _.bindAll(this, 'render', 'post', 'newSearch', 'editor', 'refresh');
+            this.storedTweets = new Tweets();
+            this.query = new Query();
+            this.listenTo(this.query, 'change', this.post);
             this.render();
+          
         },
         render: function () {
-            
             var self = this;
-            $(this.el).html(HeaderTemplate());
+            $(this.el).html(AppTemplate());
+            this.post();
+            setInterval(this.post, 50000);
             $(".header_default").slideDown();
-          
-
-            //_(this.collection.models).each(function (item) { //display any old data
-            //    self.appendItem(item);
-            //}, this);
-
+           
+        
         },
-        search: function(){
-            this.counter++;
-            var item = new Item();
-            if ($('.user_input').val() === "") {
-                item.set({
-                    string: "empty",
+        post: function(){
+            var query = this.query.get('q');
+            console.log("yolo swag");
+            if(query !== ""){
+                $.ajax({
+                  type: "POST",
+                  url: "res/logic/src/getTweets.php",
+                  data: "query="+query,
+                  success: function (data){
+                    console.log("Ajax request was a success. :D");
+                    var tweets_json = JSON.parse(data);
+                    $.each(tweets_json.statuses, function (i, tweet) { //loops through tweet statuses
+                        //console.log(tweet);
+                        var t = new Tweet(tweet);
+                        AppView.storedTweets.unshift(t);
+                        var tw = new TweetView({
+                            model: t 
+                        });
+                        $('.tweet_container').append(tw.render().el);
+                    });
+                  }
+                }).done(function() {
+                  console.log("Ajax request done. :)");
+                }).fail(function() {
+                  console.log("Ajax request died. :( ");
                 });
-            } else {
-                item.set({
-                    string: $('.user_input').val(),
-                });
+            }else{
+                console.log("blank query");
             }
-
-            item.set({
-                ID: this.counter
-            });
-            this.collection.add(item);
             $(".header_editor").slideUp();
             $(".header_default").slideDown();
         },
-        
-        appendItem: function (item) {
-            var itemView = new ItemView({
-                model: item
+        newSearch: function(){
+            this.query.set({
+                q: $('.user_input').val()
             });
-
-            //$('ul', this.el).append(itemView.render().el);
-            $('ul', '.list_container').append(itemView.render().el);
-
+            this.storedTweets.reset();
         },
-        unrender: function (template) {
-           
-        },
-
-        edit: function () {
+        editor: function () {
             $(".header_default").slideUp();
             $(".header_editor").slideDown();
             $(".user_input").focus();
             
+        },
+        refresh: function(){
+            this.post();
         }
        
-    });
+    }),
 
-    var HeaderView = new HeaderView();
+    AppView = new AppView();
 })(jQuery);
